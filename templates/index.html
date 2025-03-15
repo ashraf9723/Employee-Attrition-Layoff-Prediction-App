@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attrition & Layoff Prediction System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+</head>
+<body class="container mt-5">
+    <h2 class="text-center">Attrition & Layoff Prediction System</h2>
+    <form id="predictionForm" class="mt-4">
+        <h4>Company & Job Details</h4>
+        <div class="mb-3">
+            <label for="company" class="form-label">Company</label>
+            <input type="text" class="form-control" id="company" required>
+        </div>
+        <div class="mb-3">
+            <label for="industry" class="form-label">Industry</label>
+            <input type="text" class="form-control" id="industry" required>
+        </div>
+        <div class="mb-3">
+            <label for="funds" class="form-label">Funds Raised (in million $)</label>
+            <input type="number" class="form-control" id="funds" required>
+        </div>
+        <div class="mb-3">
+            <label for="stage" class="form-label">Company Stage</label>
+            <input type="text" class="form-control" id="stage" required>
+        </div>
+
+        <h4>Employee Details</h4>
+        <div class="mb-3">
+            <label for="department" class="form-label">Department</label>
+            <input type="text" class="form-control" id="department" required>
+        </div>
+        <div class="mb-3">
+            <label for="job_role" class="form-label">Job Role</label>
+            <input type="text" class="form-control" id="job_role" required>
+        </div>
+        <div class="mb-3">
+            <label for="salary" class="form-label">Salary (in $)</label>
+            <input type="number" class="form-control" id="salary" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Predict</button>
+    </form>
+
+    <div id="result" class="mt-4 alert alert-info" style="display: none;"></div>
+
+    <script>
+        document.getElementById("predictionForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const data = {
+                Company: document.getElementById("company").value,
+                Industry: document.getElementById("industry").value,
+                Funds_Raised: parseFloat(document.getElementById("funds").value),
+                Stage: document.getElementById("stage").value,
+                Department: document.getElementById("department").value,
+                Job_Role: document.getElementById("job_role").value,
+                Salary: parseFloat(document.getElementById("salary").value)
+            };
+            fetch("http://127.0.0.1:5000/predict", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                document.getElementById("result").style.display = "block";
+                document.getElementById("result").innerHTML =
+                    `<strong>Predicted Layoff Count:</strong> ${result.layoff_prediction} <br>
+                     <strong>Predicted Attrition Risk:</strong> ${result.attrition_prediction}%`;
+            })
+            .catch(error => console.error("Error:", error));
+        });
+    </script>
+</body>
+</html>
